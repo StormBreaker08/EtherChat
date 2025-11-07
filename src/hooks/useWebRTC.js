@@ -27,4 +27,4 @@ const useWebRTC = (isInitiator) => {
   return { isConnected, messages, setMessages };
 };
 
-export default useWebRTC;
+export { useWebRTC };
