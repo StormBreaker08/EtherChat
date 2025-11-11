@@ -1,49 +1,94 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import useAudioRecorder from "../hooks/useAudioRecorder";
 
-const MessageInput = ({ sendMessage, isRecording, startRecording, stopRecording, messageInput, setMessageInput }) => {
-  const handleInputChange = (e) => {
-    setMessageInput(e.target.value);
-  };
+export default function MessageInput(props) {
+  const sendMessage = props.sendMessage || props.onSend || (() => {});
+  const sendTyping = props.sendTyping || props.onTyping || (() => {});
+  const [text, setText] = useState("");
+  const { isRecording, audioURL, startRecording, stopRecording, resetRecording, getAudioBlob } = useAudioRecorder();
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
+  useEffect(() => {
+    if (text && sendTyping) {
+      sendTyping(true);
+      const t = setTimeout(() => sendTyping(false), 800);
+      return () => clearTimeout(t);
     }
-  };
+  }, [text, sendTyping]);
+
+  function handleSubmit(e) {
+    e?.preventDefault();
+    if (!text.trim()) return;
+    sendMessage(text.trim());
+    setText("");
+  }
+
+  function toggleRecording() {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }
+
+  function sendVoiceMessage() {
+    const blob = getAudioBlob();
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    if (props.sendVoiceMessage) {
+      props.sendVoiceMessage(url, blob);
+    }
+    resetRecording();
+  }
 
   return (
-    <div className="bg-white border-t border-gray-200 p-4 shadow-lg">
-      <div className="flex gap-3 items-end">
-        <button
-          onMouseDown={startRecording}
-          onMouseUp={stopRecording}
-          onTouchStart={startRecording}
-          onTouchEnd={stopRecording}
-          className={`p-3 rounded-full transition shadow-md flex items-center justify-center ${
-            isRecording ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-          }`}
-          title="Hold to record voice message"
-        >
-          {isRecording ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-        </button>
+    <form className="flex gap-2 p-4 bg-gray-100 rounded-lg" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Type a message..."
+        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        disabled={isRecording}
+      />
 
-        <input
-          type="text"
-          placeholder="Type your message..."
-          value={messageInput}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          className="flex-1 border border-gray-300 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition shadow-md flex items-center justify-center"
-        >
-          <Send className="w-5 h-5" />
-        </button>
-      </div>
-    </div>
+      {audioURL && (
+        <div className="flex items-center gap-2">
+          <audio controls src={audioURL} className="h-8" />
+          <button
+            type="button"
+            onClick={() => resetRecording()}
+            className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            onClick={sendVoiceMessage}
+            className="px-3 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          >
+            Send Voice
+          </button>
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={toggleRecording}
+        className={`px-3 py-2 rounded-lg text-white ${
+          isRecording ? "bg-red-500 hover:bg-red-600" : "bg-blue-500 hover:bg-blue-600"
+        }`}
+        aria-label={isRecording ? "stop recording" : "start recording"}
+      >
+        {isRecording ? "🎤 Stop" : "🎤"}
+      </button>
+
+      <button
+        type="submit"
+        className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        aria-label="send"
+      >
+        ➤ Send
+      </button>
+    </form>
   );
-};
-
-export default MessageInput;
+}

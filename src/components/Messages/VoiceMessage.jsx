@@ -1,14 +1,16 @@
-const VoiceMessage = ({ audioData, filter, isPlaying, onPlay, onPause }) => {
+import React from "react";
+
+export default function VoiceMessage({ message }) {
+  if (!message) return null;
+  const { url, from, timestamp, text } = message;
   return (
-    <div className="voice-message">
-      <audio src={audioData} controls onPlay={onPlay} onPause={onPause}>
-        Your browser does not support the audio element.
-      </audio>
-      <div className="voice-filter">
-        <span>Filter: {filter}</span>
-      </div>
+    <div className={`message voice-message ${from === "me" ? "me" : "peer"}`}>
+      {url ? (
+        <audio controls src={url} />
+      ) : (
+        <div className="message-body">{text || "Voice message"}</div>
+      )}
+      <div className="message-meta">{new Date(timestamp).toLocaleTimeString()}</div>
     </div>
   );
-};
-
-export default VoiceMessage;
+}
