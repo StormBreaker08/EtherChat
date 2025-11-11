@@ -1,73 +1,200 @@
+import React from "react";
 
-import React from 'react';
-import { MessageSquare, Shield, Zap, Users, Lock } from 'react-feather';
+export default function HomeView(props) {
+  const onCreateRoom = props.onCreateRoom || (() => {});
+  const onJoinRoom = props.onJoinRoom || (() => {});
+  const [roomCode, setRoomCode] = React.useState("");
 
-const HomeView = ({ createRoom, joinRoom, inputRoomCode, setInputRoomCode }) => (
-  <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-    <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
-      <div className="flex items-center justify-center mb-6">
-        <div className="bg-blue-600 p-4 rounded-full">
-          <MessageSquare className="w-10 h-10 text-white" />
-        </div>
-      </div>
-      <h1 className="text-3xl font-bold text-center mb-2 text-gray-800">EtherChat</h1>
-      <p className="text-center text-gray-600 mb-8">Private peer-to-peer messaging. No servers. No tracking.</p>
-      
-      <div className="space-y-4">
-        <button 
-          onClick={createRoom}
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
-        >
-          Create New Room
-        </button>
-        
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      backgroundColor: "#f9fafb",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "1rem",
+    },
+    card: {
+      maxWidth: "28rem",
+      width: "100%",
+      backgroundColor: "white",
+      borderRadius: "1rem",
+      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+      padding: "2rem",
+    },
+    center: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    icon: {
+      width: "5rem",
+      height: "5rem",
+      background: "linear-gradient(135deg, #60a5fa 0%, #4f46e5 100%)",
+      borderRadius: "0.75rem",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "1.875rem",
+      marginBottom: "1.5rem",
+      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+    },
+    title: {
+      fontSize: "2.25rem",
+      fontWeight: "700",
+      color: "#4f46e5",
+      marginBottom: "0.5rem",
+      textAlign: "center",
+    },
+    subtitle: {
+      fontSize: "1rem",
+      color: "#6b7280",
+      marginBottom: "1.5rem",
+      textAlign: "center",
+    },
+    buttonPrimary: {
+      width: "100%",
+      padding: "1rem",
+      borderRadius: "0.75rem",
+      background: "linear-gradient(90deg, #4f46e5 0%, #3b82f6 100%)",
+      color: "white",
+      fontWeight: "600",
+      border: "none",
+      cursor: "pointer",
+      fontSize: "1rem",
+      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+      transition: "opacity 0.2s",
+    },
+    buttonSecondary: {
+      width: "100%",
+      padding: "0.75rem",
+      borderRadius: "0.75rem",
+      backgroundColor: "#f3f4f6",
+      color: "#374151",
+      fontWeight: "500",
+      border: "none",
+      cursor: "pointer",
+      fontSize: "1rem",
+      transition: "background-color 0.2s",
+    },
+    input: {
+      width: "100%",
+      padding: "0.75rem 1rem",
+      border: "2px solid #f3f4f6",
+      borderRadius: "0.75rem",
+      fontSize: "1rem",
+      boxSizing: "border-box",
+      transition: "all 0.2s",
+    },
+    divider: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem",
+      margin: "0.5rem 0",
+    },
+    dividerLine: {
+      flex: 1,
+      height: "1px",
+      backgroundColor: "#e5e7eb",
+    },
+    dividerText: {
+      fontSize: "0.875rem",
+      color: "#9ca3af",
+    },
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "1rem",
+      marginTop: "2rem",
+    },
+    featureCard: {
+      padding: "1rem",
+      borderRadius: "0.75rem",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      textAlign: "center",
+    },
+    featureIcon: {
+      fontSize: "1.5rem",
+      marginBottom: "0.5rem",
+    },
+    featureText: {
+      fontWeight: "500",
+      fontSize: "0.875rem",
+      color: "#374151",
+    },
+  };
+
+  const featureCards = [
+    { icon: "🔒", label: "End-to-End Encrypted", color: "#dbeafe" },
+    { icon: "⚡", label: "Peer-to-Peer Direct", color: "#e0e7ff" },
+    { icon: "👥", label: "100% Anonymous", color: "#fce7f3" },
+    { icon: "🔐", label: "No Data Stored", color: "#fee2e2" },
+  ];
+
+  return (
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <div style={styles.center}>
+          <div style={styles.icon}>💬</div>
+          <h1 style={styles.title}>EtherChat</h1>
+          <p style={styles.subtitle}>
+            Private peer-to-peer messaging. No servers. No tracking.
+          </p>
+
+          <div style={{ width: "100%", space: "1rem" }}>
+            <button
+              onClick={onCreateRoom}
+              style={styles.buttonPrimary}
+              onMouseEnter={(e) => (e.target.style.opacity = "0.9")}
+              onMouseLeave={(e) => (e.target.style.opacity = "1")}
+            >
+              Create New Room
+            </button>
+
+            <div style={styles.divider}>
+              <div style={styles.dividerLine}></div>
+              <div style={styles.dividerText}>or</div>
+              <div style={styles.dividerLine}></div>
+            </div>
+
+            <input
+              type="text"
+              value={roomCode}
+              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+              placeholder="Enter room code (e.g., ABC)"
+              style={styles.input}
+              onFocus={(e) => (e.target.style.borderColor = "#4f46e5")}
+              onBlur={(e) => (e.target.style.borderColor = "#f3f4f6")}
+            />
+
+            <button
+              onClick={() => onJoinRoom(roomCode)}
+              style={{ ...styles.buttonSecondary, marginTop: "0.75rem" }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = "#e5e7eb")}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = "#f3f4f6")}
+            >
+              Join Room
+            </button>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">or</span>
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <input 
-            type="text" 
-            placeholder="Enter room code (e.g., ABC-123-XYZ)"
-            value={inputRoomCode}
-            onChange={(e) => setInputRoomCode(e.target.value.toUpperCase())}
-            onKeyPress={(e) => e.key === 'Enter' && joinRoom()}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button 
-            onClick={joinRoom}
-            className="w-full bg-gray-100 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition"
-          >
-            Join Room
-          </button>
-        </div>
-      </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-4">
-        <div className="text-center p-3">
-          <Shield className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-          <p className="text-xs text-gray-600 font-medium">End-to-End Encrypted</p>
-        </div>
-        <div className="text-center p-3">
-          <Zap className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-          <p className="text-xs text-gray-600 font-medium">Peer-to-Peer Direct</p>
-        </div>
-        <div className="text-center p-3">
-          <Users className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-          <p className="text-xs text-gray-600 font-medium">100% Anonymous</p>
-        </div>
-        <div className="text-center p-3">
-          <Lock className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-          <p className="text-xs text-gray-600 font-medium">No Data Stored</p>
+          <div style={styles.grid}>
+            {featureCards.map((card, idx) => (
+              <div
+                key={idx}
+                style={{
+                  ...styles.featureCard,
+                  backgroundColor: card.color,
+                }}
+              >
+                <div style={styles.featureIcon}>{card.icon}</div>
+                <div style={styles.featureText}>{card.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
-
-export default HomeView;
+  );
+}

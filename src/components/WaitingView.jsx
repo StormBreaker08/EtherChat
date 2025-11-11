@@ -1,59 +1,106 @@
-// src/components/WaitingView.jsx
-import React from 'react';
-import { Copy, Check, Share2 } from 'react-feather';
+import React from "react";
 
-const WaitingView = ({ roomCode, copyRoomCode, shareRoom, copySuccess }) => {
+export default function WaitingView(props) {
+  const { roomCode, isInitiator, webrtc, onConnected, onBack } = props;
+
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      backgroundColor: "#f9fafb",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "1rem",
+    },
+    card: {
+      maxWidth: "28rem",
+      width: "100%",
+      backgroundColor: "white",
+      borderRadius: "1rem",
+      boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+      padding: "2rem",
+    },
+    center: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    title: {
+      fontSize: "1.875rem",
+      fontWeight: "700",
+      color: "#4f46e5",
+      marginBottom: "1rem",
+      textAlign: "center",
+    },
+    text: {
+      fontSize: "1rem",
+      color: "#6b7280",
+      marginBottom: "1rem",
+      textAlign: "center",
+    },
+    code: {
+      fontSize: "2rem",
+      fontWeight: "700",
+      color: "#1f2937",
+      backgroundColor: "#f3f4f6",
+      padding: "1rem",
+      borderRadius: "0.5rem",
+      marginBottom: "1.5rem",
+      textAlign: "center",
+      fontFamily: "monospace",
+    },
+    spinner: {
+      width: "3rem",
+      height: "3rem",
+      border: "4px solid #e5e7eb",
+      borderTop: "4px solid #4f46e5",
+      borderRadius: "50%",
+      animation: "spin 1s linear infinite",
+      marginBottom: "1rem",
+    },
+    button: {
+      width: "100%",
+      padding: "0.75rem",
+      borderRadius: "0.75rem",
+      backgroundColor: "#ef4444",
+      color: "white",
+      fontWeight: "600",
+      border: "none",
+      cursor: "pointer",
+      fontSize: "1rem",
+      marginTop: "1rem",
+    },
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-2xl p-8">
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-6"></div>
-          <h2 className="text-2xl font-bold mb-2 text-gray-800">Waiting for Connection...</h2>
-          <p className="text-gray-600 text-center mb-6">Share this room code to start chatting</p>
-          
-          <div className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border-2 border-blue-200">
-            <p className="text-xs text-gray-600 mb-2 text-center font-medium">ROOM CODE</p>
-            <div className="flex items-center justify-between">
-              <span className="text-3xl font-mono font-bold text-blue-600">{roomCode}</span>
-              <button 
-                onClick={copyRoomCode}
-                className="p-3 hover:bg-white rounded-lg transition relative"
-              >
-                {copySuccess ? (
-                  <Check className="w-5 h-5 text-green-600" />
-                ) : (
-                  <Copy className="w-5 h-5 text-blue-600" />
-                )}
-              </button>
-            </div>
-          </div>
+    <div style={styles.container}>
+      <style>
+        {`@keyframes spin { to { transform: rotate(360deg); } }`}
+      </style>
+      <div style={styles.card}>
+        <div style={styles.center}>
+          <div style={styles.spinner}></div>
+          <h1 style={styles.title}>
+            {isInitiator ? "Room Created" : "Joining Room"}
+          </h1>
+          <p style={styles.text}>
+            {isInitiator
+              ? "Share this code with your peer"
+              : "Waiting for peer to connect"}
+          </p>
+          <div style={styles.code}>{roomCode}</div>
 
-          <div className="w-full space-y-3">
-            <button 
-              onClick={shareRoom}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition"
-            >
-              <Share2 className="w-4 h-4" />
-              Share Room Link
-            </button>
+          <p style={{ ...styles.text, fontSize: "0.875rem", color: "#9ca3af" }}>
+            {webrtc.isConnected
+              ? "✅ Peer connected! Redirecting..."
+              : "⏳ Waiting for peer connection..."} 
+          </p>
 
-            <button 
-              onClick={() => { /* Logic to go back */ }}
-              className="w-full text-gray-600 hover:text-gray-800 transition py-2"
-            >
-              Cancel & Go Back
-            </button>
-          </div>
-
-          <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200 w-full">
-            <p className="text-xs text-yellow-800 text-center">
-              💡 Your peer needs to enter this code to connect with you
-            </p>
-          </div>
+          <button style={styles.button} onClick={onBack}>
+            Cancel & Go Back
+          </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default WaitingView;
+}

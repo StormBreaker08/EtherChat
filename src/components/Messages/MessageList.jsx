@@ -1,25 +1,22 @@
-import React from 'react';
-import TextMessage from './TextMessage';
-import VoiceMessage from './VoiceMessage';
-import SystemMessage from './SystemMessage';
+import React from "react";
+import TextMessage from "./TextMessage";
+import VoiceMessage from "./VoiceMessage";
+import SystemMessage from "./SystemMessage";
 
-const MessageList = ({ messages }) => {
+export default function MessageList({ messages = [] }) {
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+    <div className="message-list">
       {messages.map((msg) => {
-        switch (msg.type) {
-          case 'text':
-            return <TextMessage key={msg.id} message={msg} />;
-          case 'voice':
-            return <VoiceMessage key={msg.id} message={msg} />;
-          case 'system':
-            return <SystemMessage key={msg.id} message={msg} />;
-          default:
-            return null;
+        if (!msg || !msg.type) return null;
+        if (msg.type === "text") {
+          return <TextMessage key={msg.id || msg.timestamp} message={msg} />;
         }
+        if (msg.type === "voice") {
+          return <VoiceMessage key={msg.id || msg.timestamp} message={msg} />;
+        }
+        // default / system
+        return <SystemMessage key={msg.id || msg.timestamp} message={msg} />;
       })}
     </div>
   );
-};
-
-export default MessageList;
+}
